@@ -1,0 +1,7 @@
+<div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
+    <div class="example-box" *ngFor="let movie of movies" cdkDrag>{{movie}}</div>
+</div>
+
+<button mat-button>
+    <mat-icon color="primary">send</mat-icon> Submit
+</button>
