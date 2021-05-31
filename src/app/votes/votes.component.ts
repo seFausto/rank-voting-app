@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
+import { CandidateService } from '../services/candidates.service';
+import { Observable } from 'rxjs';
 
 @Component({
   selector: 'app-votes',
@@ -8,24 +10,25 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 })
 export class VotesComponent implements OnInit {
 
-  constructor() { }
+  constructor(private candidateService: CandidateService) { }
+
+  candidates: Observable<string[]>;
+  candidatesArray: string[];
 
   ngOnInit(): void {
+    this.candidates = this.candidateService.candidates;
+    this.candidateService.loadAll();
+
+    this.candidates.subscribe(data => {
+      data.forEach(element => {
+        this.candidatesArray.push(element);
+      });
+      console.log(data)
+    });
+
   }
 
-  movies = [
-    'Episode I - The Phantom Menace',
-    'Episode II - Attack of the Clones',
-    'Episode III - Revenge of the Sith',
-    'Episode IV - A New Hope',
-    'Episode V - The Empire Strikes Back',
-    'Episode VI - Return of the Jedi',
-    'Episode VII - The Force Awakens',
-    'Episode VIII - The Last Jedi',
-    'Episode IX – The Rise of Skywalker'
-  ];
-
   drop(event: CdkDragDrop<string[]>) {
-    moveItemInArray(this.movies, event.previousIndex, event.currentIndex);
+    moveItemInArray(this.candidatesArray, event.previousIndex, event.currentIndex);
   }
 }

@@ -3,7 +3,8 @@ import { RouterModule, Routes } from '@angular/router';
 import { VotesComponent } from './votes/votes.component';
 
 const routes: Routes = [
-  { path: 'votes', component: VotesComponent }
+  { path: 'votes', component: VotesComponent },
+  { path: 'vote', component: VotesComponent }
 ];
 
 @NgModule({

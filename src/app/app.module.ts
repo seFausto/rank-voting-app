@@ -4,10 +4,11 @@ import { DragDropModule } from '@angular/cdk/drag-drop';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AppRoutingModule } from './app-routing.module';
-import { MaterialModule } from './share/material.module';
+import { MaterialModule } from './shared/material.module';
 
 import { AppComponent } from './app.component';
 import { VotesComponent } from './votes/votes.component';
+import { HttpClientModule } from '@angular/common/http';
 
 
 
@@ -22,6 +23,7 @@ import { VotesComponent } from './votes/votes.component';
     AppRoutingModule,
     BrowserAnimationsModule,
     DragDropModule,
+    HttpClientModule,
     MaterialModule
   ],
   providers: [],
