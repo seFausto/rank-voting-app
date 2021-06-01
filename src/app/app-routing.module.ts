@@ -4,7 +4,8 @@ import { VotesComponent } from './votes/votes.component';
 
 const routes: Routes = [
   { path: 'votes', component: VotesComponent },
-  { path: 'vote', component: VotesComponent }
+  { path: 'vote', component: VotesComponent },
+  { path: '', component: VotesComponent }
 ];
 
 @NgModule({

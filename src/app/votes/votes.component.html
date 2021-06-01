@@ -1,7 +1,9 @@
-<div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
-    <div class="example-box" *ngFor="let candidate of candidatesArray" cdkDrag>{{candidate}}</div>
-</div>
+<form #submitVote="ngForm" (ngSubmit)="onClickSubmit(candidatesArray)" >
 
-<button mat-button>
-    <mat-icon color="primary">send</mat-icon> Submit
-</button>
+    <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
+        <div class="example-box" *ngFor="let candidate of candidatesArray" cdkDrag>{{candidate}}</div>
+    </div>
+    <button mat-button type="submit">
+        <mat-icon color="primary">send</mat-icon> Submit
+    </button>
+</form>
