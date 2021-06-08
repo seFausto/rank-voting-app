@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { CandidateService } from '../services/candidates.service';
 import { Observable, of } from 'rxjs';
+import { ActivatedRoute } from '@angular/router';
 
 @Component({
   selector: 'app-votes',
@@ -10,18 +11,24 @@ import { Observable, of } from 'rxjs';
 })
 export class VotesComponent implements OnInit {
 
-  constructor(private candidateService: CandidateService) { }
+  constructor(private candidateService: CandidateService, private route: ActivatedRoute) { }
 
   candidates: Observable<string[]>;
   candidatesArray: string[];
 
-  ngOnInit(): void {
+  rankChoiceId: number;
 
-    this.candidatesArray = this.candidateService.getCandidates;
+  ngOnInit(): void {
+    
+    this.route.queryParams
+      .subscribe(params => {
+        this.rankChoiceId = params.id;        
+        this.candidatesArray = this.candidateService.getCandidates(this.rankChoiceId);
+      });
   }
 
   onClickSubmit(data: string[]) {
-    this.candidatesArray.forEach(x => console.log(x));
+    this.candidateService.submitRanking(data);
   }
 
   drop(event: CdkDragDrop<string[]>) {
