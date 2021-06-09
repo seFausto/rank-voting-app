@@ -14,13 +14,12 @@ export class CandidateService {
   }
 
   submitRanking(ranking: string[]) {
-    ranking.forEach(x => console.log(x));
 
-    const headers = new HttpHeaders({      
+    const headers = new HttpHeaders({
       'Content-Type': 'application/json'
     });
 
-    const url = 'https://localhost:5001/RankChoiceVoting';
+    const url = 'https://localhost:5001/RankChoiceVoting/2134';
     const body = JSON.stringify(ranking);
 
     this.http.post<any>(url, body, { 'headers': headers })
@@ -29,35 +28,14 @@ export class CandidateService {
       });
   }
 
-  getCandidates(rankChoiceId: number): string[] {
+  getCandidates(voteId: number): Observable<string[]> {
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
 
-    if (rankChoiceId == 123) {
-      return [
-        'Episode I - The Phantom Menace',
-        'Episode II - Attack of the Clones',
-        'Episode III - Revenge of the Sith',
-        'Episode IV - A New Hope',
-        'Episode V - The Empire Strikes Back',
-        'Episode VI - Return of the Jedi',
-        'Episode VII - The Force Awakens',
-        'Episode VIII - The Last Jedi',
-        'Episode IX – The Rise of Skywalker'
-      ];
-    }
-    else {
-      return [
-        'Kevin',
-        'Randall',
-        'Kate',
-        'Rebecca',
-        'Jack',
-        'Toby',
-        'William',
-        'Beth',
-        'Madison'
-      ];
-    }
+    const url = `https://localhost:5001/vote/${voteId}/candidates`;
 
+    return this.http.get<string[]>(url, { 'headers': headers });
 
   }
 }

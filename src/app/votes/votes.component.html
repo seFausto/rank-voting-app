@@ -1,7 +1,10 @@
-<form #submitVote="ngForm" (ngSubmit)="onClickSubmit(candidatesArray)" >
+<form #submitVote="ngForm" (ngSubmit)="onClickSubmit(candidatesArray)">
 
     <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
-        <div class="example-box" *ngFor="let candidate of candidatesArray" cdkDrag>{{candidate}}</div>
+        <div class="example-box" cdkDrag
+        *ngFor="let candidate of candidatesArray; index as i" >
+            {{i + 1}} - {{candidate}}
+        </div>
     </div>
     <button mat-button type="submit">
         <mat-icon color="primary">send</mat-icon> Submit

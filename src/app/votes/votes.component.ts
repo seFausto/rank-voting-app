@@ -16,14 +16,18 @@ export class VotesComponent implements OnInit {
   candidates: Observable<string[]>;
   candidatesArray: string[];
 
-  rankChoiceId: number;
+  voteId: number;
 
   ngOnInit(): void {
-    
+
     this.route.queryParams
       .subscribe(params => {
-        this.rankChoiceId = params.id;        
-        this.candidatesArray = this.candidateService.getCandidates(this.rankChoiceId);
+        this.voteId = params.id;
+
+        this.candidateService.getCandidates(this.voteId)
+          .subscribe(data =>
+            this.candidatesArray = data
+          );
       });
   }
 
