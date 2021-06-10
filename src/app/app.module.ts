@@ -10,6 +10,7 @@ import { MaterialModule } from './shared/material.module';
 
 import { AppComponent } from './app.component';
 import { VotesComponent } from './votes/votes.component';
+import { ResultsComponent } from './results/results.component';
 
 
 
@@ -17,7 +18,8 @@ import { VotesComponent } from './votes/votes.component';
 @NgModule({
   declarations: [
     AppComponent,
-    VotesComponent
+    VotesComponent,
+    ResultsComponent
   ],
   imports: [
     BrowserModule,

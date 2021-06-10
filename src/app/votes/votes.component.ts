@@ -11,12 +11,13 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class VotesComponent implements OnInit {
 
-  constructor(private candidateService: CandidateService, private route: ActivatedRoute) { }
+  constructor(private candidateService: CandidateService, 
+    private route: ActivatedRoute) { }
 
   candidates: Observable<string[]>;
   candidatesArray: string[];
 
-  voteId: number;
+  voteId: string;
 
   ngOnInit(): void {
 
@@ -25,14 +26,12 @@ export class VotesComponent implements OnInit {
         this.voteId = params.id;
 
         this.candidateService.getCandidates(this.voteId)
-          .subscribe(data =>
-            this.candidatesArray = data
-          );
+          .subscribe(data => this.candidatesArray = data);
       });
   }
 
   onClickSubmit(data: string[]) {
-    this.candidateService.submitRanking(data);
+    this.candidateService.submitRanking(this.voteId, data);
   }
 
   drop(event: CdkDragDrop<string[]>) {

@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { BehaviorSubject, observable, Observable, of } from 'rxjs';
+import { environment } from './../../environments/environment';
 
 @Injectable({
   providedIn: 'root'
@@ -13,13 +14,13 @@ export class CandidateService {
     this._candidates = new BehaviorSubject<string[]>([]);
   }
 
-  submitRanking(ranking: string[]) {
+  submitRanking(voteId: string, ranking: string[]) {
 
     const headers = new HttpHeaders({
       'Content-Type': 'application/json'
     });
 
-    const url = 'https://localhost:5001/RankChoiceVoting/2134';
+    const url = `${environment.apiEndpoint}${voteId}`;
     const body = JSON.stringify(ranking);
 
     this.http.post<any>(url, body, { 'headers': headers })
@@ -28,12 +29,24 @@ export class CandidateService {
       });
   }
 
-  getCandidates(voteId: number): Observable<string[]> {
+  getCandidates(voteId: string): Observable<string[]> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json'
     });
 
-    const url = `https://localhost:5001/vote/${voteId}/candidates`;
+    const url = `${environment.apiEndpoint}${voteId}/candidates`;
+
+    return this.http.get<string[]>(url, { 'headers': headers });
+
+  }
+
+  getVoteIdResults(voteId: string): Observable<string[]>{
+    
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+
+    const url = `${environment.apiEndpoint}${voteId}/result`;
 
     return this.http.get<string[]>(url, { 'headers': headers });
 
