@@ -6,9 +6,15 @@
         <div>
             <mat-form-field appearance="fill">
                 <mat-label>Enter existing Ranking</mat-label>
-                <input matInput>
+                <input matInput [(ngModel)]="voteId">
             </mat-form-field>
-            <a mat-raised-button color="primary">Go</a>
+
+            <a routerLink="/votes" [queryParams]="{id: voteId}">
+                <button mat-raised-button color="primary">
+                    Go
+                </button>
+            </a>
+            
         </div>
     </mat-grid-tile>
 

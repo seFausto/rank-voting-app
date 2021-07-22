@@ -9,6 +9,8 @@ export class NewRankingComponent implements OnInit {
 
   constructor() { }
 
+  voteId: string;
+  
   ngOnInit(): void {
   }
 
