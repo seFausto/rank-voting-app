@@ -11,6 +11,7 @@ import { MaterialModule } from './shared/material.module';
 import { AppComponent } from './app.component';
 import { VotesComponent } from './votes/votes.component';
 import { ResultsComponent } from './results/results.component';
+import { NewRankingComponent } from './new-ranking/new-ranking.component';
 
 
 
@@ -19,7 +20,8 @@ import { ResultsComponent } from './results/results.component';
   declarations: [
     AppComponent,
     VotesComponent,
-    ResultsComponent
+    ResultsComponent,
+    NewRankingComponent
   ],
   imports: [
     BrowserModule,
