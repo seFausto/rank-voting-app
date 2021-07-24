@@ -17,7 +17,7 @@
 <div>
     <p>List of candidates</p>
     <div class="example-list">
-        <div class="example-box" *ngFor="let candidate of resultArray; index as i">
+        <div class="example-box" *ngFor="let candidate of resultArray; index as i" (dblclick)="test()">
             {{i + 1}} - {{candidate}}
         </div>
     </div>

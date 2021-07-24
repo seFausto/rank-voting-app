@@ -25,4 +25,8 @@ export class NewRankingComponent implements OnInit {
     this.resultArray.forEach(x => console.log(x));
   }
 
+  test(){
+    console.log("Passed");
+
+  }
 }
