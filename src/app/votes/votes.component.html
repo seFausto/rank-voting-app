@@ -1,7 +1,8 @@
-<div *ngIf="candidatesArray.length==0">
+<div *ngIf="candidatesArray == null || candidatesArray.length==0">
     <h1>No Ranking Found</h1>
 </div>
-<div *ngIf="candidatesArray.length>0">
+
+<div *ngIf="candidatesArray != null && candidatesArray.length>0">
     <h1>Order from favorite to least favorite</h1>
     <h2>Then click submit</h2>
     <form #submitVote="ngForm" (ngSubmit)="onClickSubmit(candidatesArray)">

@@ -20,7 +20,7 @@ export class CandidateService {
       'Content-Type': 'application/json'
     });
 
-    const url = `${environment.apiEndpoint}/new`;
+    const url = `${environment.apiEndpoint}new`;
     const body = JSON.stringify(ranking);
 
     this.http.post<any>(url, body, { 'headers': headers })
@@ -36,7 +36,7 @@ export class CandidateService {
       'Content-Type': 'application/json'
     });
 
-    const url = `${environment.apiEndpoint}${voteId}`;
+    const url = `${environment.apiEndpoint}vote/${voteId}`;
     const body = JSON.stringify(ranking);
 
     this.http.post<any>(url, body, { 'headers': headers })
@@ -50,7 +50,7 @@ export class CandidateService {
       'Content-Type': 'application/json'
     });
 
-    const url = `${environment.apiEndpoint}${voteId}/candidates`;
+    const url = `${environment.apiEndpoint}vote/${voteId}/candidates`;
 
     return this.http.get<string[]>(url, { 'headers': headers });
 
@@ -62,7 +62,7 @@ export class CandidateService {
       'Content-Type': 'application/json'
     });
 
-    const url = `${environment.apiEndpoint}${voteId}/result`;
+    const url = `${environment.apiEndpoint}vote/${voteId}/result`;
 
     return this.http.get<string[]>(url, { 'headers': headers });
 
