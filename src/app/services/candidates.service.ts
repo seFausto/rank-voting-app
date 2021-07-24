@@ -14,6 +14,22 @@ export class CandidateService {
     this._candidates = new BehaviorSubject<string[]>([]);
   }
 
+  submitNewRanking(ranking: string[]) {
+
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+
+    const url = `${environment.apiEndpoint}/new`;
+    const body = JSON.stringify(ranking);
+
+    this.http.post<any>(url, body, { 'headers': headers })
+      .subscribe(data => {
+        console.log(data);
+      });
+
+  }
+
   submitRanking(voteId: string, ranking: string[]) {
 
     const headers = new HttpHeaders({
@@ -40,8 +56,8 @@ export class CandidateService {
 
   }
 
-  getVoteIdResults(voteId: string): Observable<string[]>{
-    
+  getVoteIdResults(voteId: string): Observable<string[]> {
+
     const headers = new HttpHeaders({
       'Content-Type': 'application/json'
     });

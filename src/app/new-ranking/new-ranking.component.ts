@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { CandidateService } from '../services/candidates.service';
 
 @Component({
   selector: 'app-new-ranking',
@@ -7,7 +8,7 @@ import { Component, OnInit } from '@angular/core';
 })
 export class NewRankingComponent implements OnInit {
 
-  constructor() { }
+  constructor(private candidateService: CandidateService) { }
 
   resultArray: string[];
   newCandidate: string;
@@ -22,10 +23,10 @@ export class NewRankingComponent implements OnInit {
   }
 
   onClickSubmitList() {
-    this.resultArray.forEach(x => console.log(x));
+    this.candidateService.submitNewRanking(this.resultArray);
   }
 
-  test(){
+  test() {
     console.log("Passed");
 
   }
