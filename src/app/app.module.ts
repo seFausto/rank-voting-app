@@ -12,6 +12,7 @@ import { AppComponent } from './app.component';
 import { VotesComponent } from './votes/votes.component';
 import { ResultsComponent } from './results/results.component';
 import { LandingComponent } from './landing/landing.component';
+import { NewRankingComponent } from './new-ranking/new-ranking.component';
 
 
 
@@ -21,7 +22,8 @@ import { LandingComponent } from './landing/landing.component';
     AppComponent,
     VotesComponent,
     ResultsComponent,
-    LandingComponent
+    LandingComponent,
+    NewRankingComponent
   ],
   imports: [
     BrowserModule,

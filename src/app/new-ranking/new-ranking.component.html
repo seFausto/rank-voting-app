@@ -1,0 +1,27 @@
+<p>new-ranking works!</p>
+
+<div>
+
+    <form #submitVote="ngForm" (ngSubmit)="onClickSubmit()">
+        <mat-form-field appearance="fill">
+            <mat-label>Enter option</mat-label>
+            <input matInput [(ngModel)]="newCandidate" name="candidate">
+        </mat-form-field>
+
+        <button mat-raised-button color="primary">
+            Add
+        </button>
+    </form>
+</div>
+
+<div>
+    <p>List of candidates</p>
+    <div class="example-list">
+        <div class="example-box" *ngFor="let candidate of resultArray; index as i">
+            {{i + 1}} - {{candidate}}
+        </div>
+    </div>
+    <button mat-raised-button color="primary" (click)="onClickSubmitList()">
+        Submit
+    </button>
+</div>
