@@ -11,27 +11,31 @@ import { ActivatedRoute } from '@angular/router';
 })
 export class VotesComponent implements OnInit {
 
-  constructor(private candidateService: CandidateService, 
+  constructor(private candidateService: CandidateService,
     private route: ActivatedRoute) { }
 
   candidates: Observable<string[]>;
   candidatesArray: string[];
 
-  voteId: string;
+  voteId: string | null;
 
   ngOnInit(): void {
 
-    this.route.queryParams
+    this.route.paramMap
       .subscribe(params => {
-        this.voteId = params.id;
 
-        this.candidateService.getCandidates(this.voteId)
-          .subscribe(data => this.candidatesArray = data);
+        this.voteId = params.get("voteId");
+        if (this.voteId != null) {
+          this.candidateService.getCandidates(this.voteId)
+            .subscribe(data => this.candidatesArray = data);
+        }
       });
   }
 
   onClickSubmit(data: string[]) {
-    this.candidateService.submitRanking(this.voteId, data);
+    if (this.voteId != null) {
+      this.candidateService.submitRanking(this.voteId, data);
+    }
   }
 
   drop(event: CdkDragDrop<string[]>) {

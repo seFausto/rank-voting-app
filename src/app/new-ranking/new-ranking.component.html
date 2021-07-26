@@ -25,3 +25,7 @@
         Submit
     </button>
 </div>
+
+<div *ngIf="voteId != null">
+    Here's the link <a [routerLink]="['/votes', voteId]">{{url}}</a>
+</div>

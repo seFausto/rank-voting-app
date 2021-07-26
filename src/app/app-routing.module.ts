@@ -7,7 +7,8 @@ import { VotesComponent } from './votes/votes.component';
 
 const routes: Routes = [
   { path: 'votes/results', component: ResultsComponent },
-  { path: 'votes', component: VotesComponent },
+  { path: 'votes/:voteId', component: VotesComponent },  
+  { path: 'votes', component: VotesComponent },  
   { path: 'vote', component: VotesComponent },
   { path: 'new', component: NewRankingComponent },
   { path: '', component: LandingComponent }

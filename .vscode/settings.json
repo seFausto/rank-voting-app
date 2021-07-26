@@ -1,4 +1,8 @@
 {
     "appService.defaultWebAppToDeploy": "/subscriptions/c249c3a9-4478-4c72-a2e1-10233d2e96ec/resourceGroups/RankChoiceVotingResourceGroup/providers/Microsoft.Web/sites/rank-choice-voting",
-    "appService.deploySubpath": "dist\\rank-voting-app"
+    "appService.deploySubpath": "dist\\rank-voting-app",
+    "appService.zipIgnorePattern": [
+        "node_modules{,/**}",
+        ".vscode{,/**}"
+    ]
 }

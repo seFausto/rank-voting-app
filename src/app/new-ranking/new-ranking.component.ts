@@ -12,6 +12,8 @@ export class NewRankingComponent implements OnInit {
 
   resultArray: string[];
   newCandidate: string;
+  url: string;
+  voteId: string;
 
   ngOnInit(): void {
     this.resultArray = Array();
@@ -23,7 +25,11 @@ export class NewRankingComponent implements OnInit {
   }
 
   onClickSubmitList() {
-    this.candidateService.submitNewRanking(this.resultArray);
+    this.candidateService.submitNewRanking(this.resultArray)
+      .subscribe(data=> {
+        this.voteId = data;
+        this.url = `${location.origin}/votes/${this.voteId}`
+      });
   }
 
   test() {

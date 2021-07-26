@@ -23,10 +23,7 @@ export class CandidateService {
     const url = `${environment.apiEndpoint}new`;
     const body = JSON.stringify(ranking);
 
-    this.http.post<any>(url, body, { 'headers': headers })
-      .subscribe(data => {
-        console.log(data);
-      });
+    return this.http.post<any>(url, body, { 'headers': headers });
 
   }
 

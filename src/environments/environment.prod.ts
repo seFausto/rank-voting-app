@@ -1,4 +1,4 @@
 export const environment = {
   production: true,
-  apiEndpoint: 'https://rank-choice-voting-api.azurewebsites.net/vote/'
+  apiEndpoint: 'https://rank-choice-voting-api.azurewebsites.net/'
 };
