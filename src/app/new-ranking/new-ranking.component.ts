@@ -25,8 +25,9 @@ export class NewRankingComponent implements OnInit {
   }
 
   onClickSubmitList() {
-    this.candidateService.submitNewRanking(this.resultArray)
-      .subscribe(data=> {
+    this.candidateService.createNewRanking(this.resultArray)
+      .subscribe(data => {
+        console.log(data);
         this.voteId = data;
         this.url = `${location.origin}/votes/${this.voteId}`
       });

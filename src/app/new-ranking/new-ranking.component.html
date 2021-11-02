@@ -26,6 +26,6 @@
     </button>
 </div>
 
-<div *ngIf="voteId != null">
+<div *ngIf="this.voteId != null">
     Here's the link <a [routerLink]="['/votes', voteId]">{{url}}</a>
 </div>

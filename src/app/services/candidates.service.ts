@@ -14,7 +14,7 @@ export class CandidateService {
     this._candidates = new BehaviorSubject<string[]>([]);
   }
 
-  submitNewRanking(ranking: string[]) {
+  createNewRanking(ranking: string[]) {
 
     const headers = new HttpHeaders({
       'Content-Type': 'application/json'
