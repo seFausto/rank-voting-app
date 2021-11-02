@@ -13,12 +13,12 @@
             </div>
         </div>
 
-        <button mat-raised-button type="submit">
+        <button mat-raised-button type="submit" [disabled]="voteSubmitted">
             <mat-icon color="primary">send</mat-icon> Submit
         </button>
 
         <a routerLink="/votes/results" [queryParams]="{id: voteId}">
-            <button mat-stroked-button color="primary">
+            <button mat-stroked-button color="primary" [disabled]="!voteSubmitted">
                 <mat-icon color="primary">list</mat-icon> View Results
             </button>
         </a>
