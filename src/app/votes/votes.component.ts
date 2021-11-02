@@ -21,12 +21,12 @@ export class VotesComponent implements OnInit {
   voteId: string | null;
   voteSubmitted: boolean;
 
+  cookieName: string;
 
   ngOnInit(): void {
 
     this.route.paramMap
       .subscribe(params => {
-
         this.voteId = params.get("voteId");
         if (this.voteId != null) {
           this.candidateService.getCandidates(this.voteId)
@@ -34,7 +34,8 @@ export class VotesComponent implements OnInit {
         }
       });
 
-    this.voteSubmitted = getCookie("hasUserVoted") == "true";
+    this.cookieName = `hasUserVoted${this.voteId}`;
+    this.voteSubmitted = getCookie(this.cookieName) == "true";
   }
 
   onClickSubmit(data: string[]) {
@@ -44,7 +45,7 @@ export class VotesComponent implements OnInit {
           if (result) {
             this._snackbar.open("Ranking submitted", "Ok", { duration: 3000 });
             this.voteSubmitted = true;
-            setCookie("hasUserVoted", "true");
+            setCookie(this.cookieName, "true");
           }
         });
     }
