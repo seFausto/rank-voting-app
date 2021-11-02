@@ -1,6 +1,5 @@
 import { Component, OnInit } from '@angular/core';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { HttpClientModule } from '@angular/common/http';
 import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { CandidateService } from '../services/candidates.service';
 import { Observable, of } from 'rxjs';
@@ -35,17 +34,17 @@ export class VotesComponent implements OnInit {
         }
       });
 
-      this.voteSubmitted = false;
+    this.voteSubmitted = getCookie("hasUserVoted") == "true";
   }
 
   onClickSubmit(data: string[]) {
     if (this.voteId != null) {
       this.candidateService.submitRanking(this.voteId, data)
         .subscribe(result => {
-          if (result)
-          {
+          if (result) {
             this._snackbar.open("Ranking submitted", "Ok", { duration: 3000 });
             this.voteSubmitted = true;
+            setCookie("hasUserVoted", "true");
           }
         });
     }
@@ -54,4 +53,24 @@ export class VotesComponent implements OnInit {
   drop(event: CdkDragDrop<string[]>) {
     moveItemInArray(this.candidatesArray, event.previousIndex, event.currentIndex);
   }
+}
+
+export function setCookie(name: string, val: string) {
+  document.cookie = name + "=" + val;
+}
+
+export function getCookie(name: string) {
+  const value = "; " + document.cookie;
+  const parts = value.split("; " + name + "=");
+
+  if (parts.length == 2) {
+    var cookie = parts.pop();
+    if (cookie != undefined) {
+      return cookie.split(";").shift();
+    }
+    else
+      return "";
+  }
+  else
+    return "";
 }

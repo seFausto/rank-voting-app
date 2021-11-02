@@ -13,6 +13,7 @@
             </div>
         </div>
 
+        <mat-card *ngIf="voteSubmitted">You have already voted</mat-card>
         <button mat-raised-button type="submit" [disabled]="voteSubmitted">
             <mat-icon color="primary">send</mat-icon> Submit
         </button>
