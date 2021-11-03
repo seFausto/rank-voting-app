@@ -9,7 +9,9 @@
         <div>
             <mat-form-field appearance="fill">
                 <mat-label>Enter existing Ranking</mat-label>
-                <input matInput [(ngModel)]="voteId">
+                <input matInput [(ngModel)]="voteId"
+                (change)="voteId=voteId.trim()"
+                >
             </mat-form-field>
 
             <a [routerLink]=  "['/votes', this.voteId]">
@@ -18,6 +20,17 @@
                 </button>
             </a>
 
+
+            <div>
+                <p>Previous rankings:</p>
+                <ul>
+                    <li *ngFor="let vote of this.votes">
+                        <a [routerLink]= "['/votes', vote]">
+                            {{vote}}
+                        </a>
+                    </li>
+                </ul>
+            </div>
         </div>
     </mat-grid-tile>
 
