@@ -27,26 +27,28 @@ export class CandidateService {
 
   }
 
-  submitRanking(voteId: string, ranking: string[]) {
+  submitRanking(voteId: string, ranking: string[], userId: string) {
 
     const headers = new HttpHeaders({
       'Content-Type': 'application/json'
     });
 
-    const url = `${environment.apiEndpoint}vote/${voteId}`;
+    const url = `${environment.apiEndpoint}vote/${voteId}/${userId}`;
     const body = JSON.stringify(ranking);
 
     return this.http.post<any>(url, body, { 'headers': headers });
   }
 
-  getCandidates(voteId: string): Observable<string[]> {
+  getCandidates(voteId: string, userId: string): Observable<string[]> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json'
     });
 
     const url = `${environment.apiEndpoint}vote/${voteId}/candidates`;
 
-    return this.http.get<string[]>(url, { 'headers': headers });
+    const body = JSON.stringify(userId);
+
+    return this.http.post<string[]>(url, body, { 'headers': headers });
 
   }
 

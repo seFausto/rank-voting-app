@@ -4,6 +4,7 @@ import { CdkDragDrop, moveItemInArray } from '@angular/cdk/drag-drop';
 import { CandidateService } from '../services/candidates.service';
 import { Observable, of } from 'rxjs';
 import { ActivatedRoute } from '@angular/router';
+import { nanoid } from 'nanoid';
 
 @Component({
   selector: 'app-votes',
@@ -22,30 +23,36 @@ export class VotesComponent implements OnInit {
   voteSubmitted: boolean;
 
   cookieName: string;
+  userId: string;
 
   ngOnInit(): void {
-
     this.route.paramMap
       .subscribe(params => {
+
         this.voteId = params.get("voteId");
+
+        this.cookieName = `${this.voteId}`;
+        this.voteSubmitted = getCookie(this.cookieName) != "";
+        this.userId = getCookie(this.cookieName) ?? "";
+
         if (this.voteId != null) {
-          this.candidateService.getCandidates(this.voteId)
+          this.candidateService.getCandidates(this.voteId, this.userId)
             .subscribe(data => this.candidatesArray = data);
         }
       });
-
-    this.cookieName = `hasUserVoted${this.voteId}`;
-    this.voteSubmitted = getCookie(this.cookieName) == "true";
   }
 
   onClickSubmit(data: string[]) {
     if (this.voteId != null) {
-      this.candidateService.submitRanking(this.voteId, data)
+
+      let userId = nanoid(5);
+
+      this.candidateService.submitRanking(this.voteId, data, userId)
         .subscribe(result => {
           if (result) {
             this._snackbar.open("Ranking submitted", "Ok", { duration: 3000 });
             this.voteSubmitted = true;
-            setCookie(this.cookieName, "true");
+            setCookie(this.cookieName, userId);
           }
         });
     }
@@ -69,9 +76,7 @@ export function getCookie(name: string) {
     if (cookie != undefined) {
       return cookie.split(";").shift();
     }
-    else
-      return "";
   }
-  else
-    return "";
+
+  return "";
 }
