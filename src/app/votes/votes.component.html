@@ -7,13 +7,15 @@
     <h2>Then click submit</h2>
     <form #submitVote="ngForm" (ngSubmit)="onClickSubmit(candidatesArray)">
 
+        <mat-card *ngIf="voteSubmitted">You have already voted. This is your ranking:</mat-card>
+
         <div cdkDropList class="example-list" (cdkDropListDropped)="drop($event)">
             <div class="example-box" cdkDrag *ngFor="let candidate of candidatesArray; index as i">
                 {{i + 1}} - {{candidate}}
             </div>
         </div>
 
-        <mat-card *ngIf="voteSubmitted">You have already voted</mat-card>
+
         <button mat-raised-button type="submit" [disabled]="voteSubmitted">
             <mat-icon color="primary">send</mat-icon> Submit
         </button>
