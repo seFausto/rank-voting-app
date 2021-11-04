@@ -4,6 +4,11 @@
 
     <form #submitVote="ngForm" (ngSubmit)="onClickSubmit()">
         <mat-form-field appearance="fill">
+            <mat-label>Enter Name of Ranking</mat-label>
+            <input matInput [(ngModel)]="rankingName" name="rankingName">
+        </mat-form-field>
+
+        <mat-form-field appearance="fill">
             <mat-label>Enter option</mat-label>
             <input matInput [(ngModel)]="newCandidate" name="candidate">
         </mat-form-field>

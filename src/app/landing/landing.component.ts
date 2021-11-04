@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import { CandidateService } from '../services/candidates.service';
 
 @Component({
   selector: 'landing',
@@ -7,22 +8,25 @@ import { Component, OnInit } from '@angular/core';
 })
 export class LandingComponent implements OnInit {
 
-  constructor() { }
+  constructor(private candidateSerivce: CandidateService) { }
 
   voteId: string;
-  votes: string[];
+  rankingInfo: [string, string][];
 
   ngOnInit(): void {
 
-    this.votes = [];
+    this.rankingInfo = [];
 
     let theCookies = document.cookie.split(';');
 
     for (var i = 0; i < theCookies.length; i++) {
-      let pastVoteId = theCookies[i].split('=');
+      let pastVoteId = theCookies[i].split('=')[0].trim();
 
-      this.votes.push(pastVoteId[0].replace(/\s/g, ""));
-
+      if (!pastVoteId.includes('Voted')) {
+        this.candidateSerivce.getRankingInfo(pastVoteId).subscribe(title => {
+          this.rankingInfo.push([pastVoteId, title]);
+        });
+      }
     }
   }
 

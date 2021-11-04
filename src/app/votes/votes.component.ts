@@ -23,6 +23,7 @@ export class VotesComponent implements OnInit {
   voteSubmitted: boolean;
 
   cookieName: string;
+  cookieVote: string;
   userId: string;
 
   ngOnInit(): void {
@@ -32,11 +33,19 @@ export class VotesComponent implements OnInit {
         this.voteId = params.get("voteId");
 
         this.cookieName = `${this.voteId}`;
-        this.voteSubmitted = getCookie(this.cookieName) != "";
-        this.userId = getCookie(this.cookieName) ?? "";
+        this.cookieVote = `${this.voteId}Voted`
+        this.voteSubmitted = getCookie(this.cookieVote) != "";
+
+        if (getCookie(this.cookieName) == "") {
+          this.userId = nanoid(5);
+        }
+        else {
+          this.userId = getCookie(this.cookieName) as string;
+        }
+        setCookie(this.cookieName, this.userId);
 
         if (this.voteId != null) {
-          this.candidateService.getCandidates(this.voteId, this.userId)
+          this.candidateService.getCandidates(this.voteId, this.userId, this.voteSubmitted)
             .subscribe(data => this.candidatesArray = data);
         }
       });
@@ -45,14 +54,12 @@ export class VotesComponent implements OnInit {
   onClickSubmit(data: string[]) {
     if (this.voteId != null) {
 
-      let userId = nanoid(5);
-
-      this.candidateService.submitRanking(this.voteId, data, userId)
+      this.candidateService.submitRanking(this.voteId, data, this.userId)
         .subscribe(result => {
           if (result) {
             this._snackbar.open("Ranking submitted", "Ok", { duration: 3000 });
             this.voteSubmitted = true;
-            setCookie(this.cookieName, userId);
+            setCookie(this.cookieVote, "true");
           }
         });
     }

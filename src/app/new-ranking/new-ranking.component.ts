@@ -12,6 +12,7 @@ export class NewRankingComponent implements OnInit {
 
   resultArray: string[];
   newCandidate: string;
+  rankingName: string;
   url: string;
   voteId: string;
 
@@ -25,7 +26,7 @@ export class NewRankingComponent implements OnInit {
   }
 
   onClickSubmitList() {
-    this.candidateService.createNewRanking(this.resultArray)
+    this.candidateService.createNewRanking(this.rankingName, this.resultArray)
       .subscribe(data => {
         console.log(data);
         this.voteId = data;

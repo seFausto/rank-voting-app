@@ -14,13 +14,13 @@ export class CandidateService {
     this._candidates = new BehaviorSubject<string[]>([]);
   }
 
-  createNewRanking(ranking: string[]) {
+  createNewRanking(rankingName: string, ranking: string[]) {
 
     const headers = new HttpHeaders({
       'Content-Type': 'application/json'
     });
 
-    const url = `${environment.apiEndpoint}new`;
+    const url = `${environment.apiEndpoint}new/${rankingName}`;
     const body = JSON.stringify(ranking);
 
     return this.http.post<any>(url, body, { 'headers': headers });
@@ -33,18 +33,18 @@ export class CandidateService {
       'Content-Type': 'application/json'
     });
 
-    const url = `${environment.apiEndpoint}vote/${voteId}/${userId}`;
+    const url = `${environment.apiEndpoint}vote/${voteId}/submit/${userId}`;
     const body = JSON.stringify(ranking);
 
     return this.http.post<any>(url, body, { 'headers': headers });
   }
 
-  getCandidates(voteId: string, userId: string): Observable<string[]> {
+  getCandidates(voteId: string, userId: string, didVote: boolean): Observable<string[]> {
     const headers = new HttpHeaders({
       'Content-Type': 'application/json'
     });
 
-    const url = `${environment.apiEndpoint}vote/${voteId}/candidates`;
+    const url = `${environment.apiEndpoint}vote/${voteId}/candidates/${didVote}`;
 
     const body = JSON.stringify(userId);
 
@@ -61,6 +61,16 @@ export class CandidateService {
     const url = `${environment.apiEndpoint}vote/${voteId}/result`;
 
     return this.http.get<string[]>(url, { 'headers': headers });
+  }
 
+  getRankingInfo(voteId: string): Observable<any> {
+
+    const headers = new HttpHeaders({
+      'Content-Type': 'application/json'
+    });
+
+    const url = `${environment.apiEndpoint}vote/${voteId}/info`;
+
+    return this.http.get<any>(url, { 'headers': headers });
   }
 }

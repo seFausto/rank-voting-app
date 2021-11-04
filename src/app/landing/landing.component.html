@@ -24,9 +24,9 @@
             <div>
                 <p>Previous rankings:</p>
                 <ul>
-                    <li *ngFor="let vote of this.votes">
-                        <a [routerLink]= "['/votes', vote]">
-                            {{vote}}
+                    <li *ngFor="let ranking of this.rankingInfo">
+                        <a [routerLink]= "['/votes', ranking[0]]">
+                            {{ranking[1]}}
                         </a>
                     </li>
                 </ul>
