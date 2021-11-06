@@ -33,9 +33,4 @@ export class NewRankingComponent implements OnInit {
         this.url = `${location.origin}/votes/${this.voteId}`
       });
   }
-
-  test() {
-    console.log("Passed");
-
-  }
 }

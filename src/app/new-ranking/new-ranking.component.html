@@ -22,7 +22,7 @@
 <div>
     <p>List of candidates</p>
     <div class="example-list">
-        <div class="example-box" *ngFor="let candidate of resultArray; index as i" (dblclick)="test()">
+        <div class="example-box" *ngFor="let candidate of resultArray; index as i">
             {{i + 1}} - {{candidate}}
         </div>
     </div>
