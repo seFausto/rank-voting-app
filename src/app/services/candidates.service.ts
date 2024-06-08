@@ -20,7 +20,7 @@ export class CandidateService {
       'Content-Type': 'application/json'
     });
 
-    const url = `${environment.apiEndpoint}new/${rankingName}`;
+    const url = `${environment.apiEndpoint}vote/new/${rankingName}`;
     const body = JSON.stringify(ranking);
 
     return this.http.post<any>(url, body, { 'headers': headers });

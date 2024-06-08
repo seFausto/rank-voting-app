@@ -4,7 +4,7 @@
 
 export const environment = {
   production: false,
-  apiEndpoint: 'https://localhost:44371/'
+  apiEndpoint: 'http://localhost:8080/' //app in cointainer
 };
 
 /*
