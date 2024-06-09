@@ -4,7 +4,9 @@
 
 export const environment = {
   production: false,
-  apiEndpoint: 'http://localhost:8080/' //app in cointainer
+  // apiEndpoint: 'http://localhost:5000/' //app in cointainer
+  // apiEndpoint: 'http://localhost:8080/' //app in cointainer
+  apiEndpoint: "https://ranked-choice-voting.greensmoke-87f26ef7.westus3.azurecontainerapps.io/"
 };
 
 /*
