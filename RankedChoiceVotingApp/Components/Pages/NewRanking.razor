@@ -1,0 +1,27 @@
+﻿@page "/new-ranking"
+@rendermode InteractiveServer
+
+<PageTitle>New Ranking</PageTitle>
+
+<h1>New Ranking</h1>
+
+<p role="status">Please enter the name of the new ranking</p>
+<input placeholder="Name of Ranking" />
+
+<p> Please enter each candidate</p>
+<input placeholder="Candidate" @bind="newCandidate"/>
+<button class="btn btn-primary" @onclick="AddCandidate">Add Candidate</button>
+
+
+@code {
+    private int currentCount = 0;
+
+    private Candidate? newCandidate;
+    private List<Candidate> Candidates = new();
+
+    private void AddCandidate()
+    {
+        if (newCandidate is not null)
+            Candidates.Add(newCandidate);
+    }
+}

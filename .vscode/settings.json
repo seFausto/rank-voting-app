@@ -1,8 +1,0 @@
-{
-    "appService.defaultWebAppToDeploy": "",
-    "appService.deploySubpath": "dist\\rank-voting-app",
-    "appService.zipIgnorePattern": [
-        "node_modules{,/**}",
-        ".vscode{,/**}"
-    ]
-}
