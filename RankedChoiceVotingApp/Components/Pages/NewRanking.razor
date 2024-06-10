@@ -6,22 +6,47 @@
 <h1>New Ranking</h1>
 
 <p role="status">Please enter the name of the new ranking</p>
-<input placeholder="Name of Ranking" />
+<input placeholder="Name of Ranking" @bind="rankingName" />
 
 <p> Please enter each candidate</p>
-<input placeholder="Candidate" @bind="newCandidate"/>
+<input placeholder="Candidate" @bind="newCandidate" />
 <button class="btn btn-primary" @onclick="AddCandidate">Add Candidate</button>
 
+
+<ul>
+    @foreach (var candidate in Candidates)
+    {
+        <li>
+            <input @bind="candidate.Name" />
+        </li>
+    }
+
+</ul>
 
 @code {
     private int currentCount = 0;
 
-    private Candidate? newCandidate;
+    private string? newCandidate;
+    private string? rankingName;
     private List<Candidate> Candidates = new();
 
     private void AddCandidate()
     {
-        if (newCandidate is not null)
-            Candidates.Add(newCandidate);
+
+        if (!string.IsNullOrWhiteSpace(newCandidate)
+            && !string.IsNullOrWhiteSpace(rankingName))
+        {
+            Candidate candidate = new()
+                {
+                    Name = newCandidate,
+                    RankingName = rankingName
+                };
+
+            Candidates.Add(candidate);
+
+            newCandidate = string.Empty;
+        }
     }
+
+
 }
