@@ -1,4 +1,8 @@
 ﻿@page "/new-ranking"
+@using Confluent.Kafka
+@using RankedChoiceVotingApp.Classes
+@using System.Text.Json
+@inject IConfiguration configuration
 @rendermode InteractiveServer
 
 <PageTitle>New Ranking</PageTitle>
@@ -6,15 +10,15 @@
 <h1>New Ranking</h1>
 
 <p role="status">Please enter the name of the new ranking</p>
-<input placeholder="Name of Ranking" @bind="rankingName" />
+<input placeholder="Name of Ranking" @bind="_rankingName" />
 
 <p> Please enter each candidate</p>
-<input placeholder="Candidate" @bind="newCandidate" />
+<input placeholder="Candidate" @bind="_newCandidate" />
 <button class="btn btn-primary" @onclick="AddCandidate">Add Candidate</button>
 
 
 <ul>
-    @foreach (var candidate in Candidates)
+    @foreach (var candidate in _candidates)
     {
         <li>
             <input @bind="candidate.Name" />
@@ -22,31 +26,80 @@
     }
 
 </ul>
+<button class="btn btn-primary" @onclick="SubmitNewRanking">Submit New Ranking</button>
+
 
 @code {
     private int currentCount = 0;
 
-    private string? newCandidate;
-    private string? rankingName;
-    private List<Candidate> Candidates = new();
+    private string? _newCandidate;
+    private string? _rankingName;
 
-    private void AddCandidate()
+    private string _rankingId = string.Empty;
+    public string RankingId
     {
-
-        if (!string.IsNullOrWhiteSpace(newCandidate)
-            && !string.IsNullOrWhiteSpace(rankingName))
+        get
         {
-            Candidate candidate = new()
-                {
-                    Name = newCandidate,
-                    RankingName = rankingName
-                };
+            if (string.IsNullOrWhiteSpace(_rankingId))
+                _rankingId = Common.GenerateId();
 
-            Candidates.Add(candidate);
-
-            newCandidate = string.Empty;
+            return _rankingId;
         }
     }
 
+    private List<Candidate> _candidates = new();
 
+    private void AddCandidate()
+    {
+        if (!string.IsNullOrWhiteSpace(_newCandidate))
+        {
+            Candidate candidate = new()
+                {
+                    Name = _newCandidate,
+                    RankingId = RankingId
+                };
+
+            _candidates.Add(candidate);
+
+            _newCandidate = string.Empty;
+        }
+    }
+
+    private void SubmitNewRanking()
+    {
+        const string topic = "new-ranking";
+
+        if (string.IsNullOrWhiteSpace(_rankingName))
+            return;
+
+        var ranking = new Ranking
+            {
+                Id = this.RankingId,
+                Candidates = _candidates,
+                Name = _rankingName
+            };
+
+        var iniSettings = Common.GetKafkaConfiguration((IConfigurationRoot)this.configuration);
+
+        using (var producer = new ProducerBuilder<string, string>(iniSettings).Build())
+        {
+            Message<string, string> message = new()
+                {
+                    Key = _rankingName,
+                    Value = JsonSerializer.Serialize(ranking)
+                };
+
+            producer.Produce(topic, message, (deliveryReport) =>
+            {
+                if (deliveryReport.Error.Code != ErrorCode.NoError)
+                {
+                    Console.WriteLine($"Failed to deliver message: {deliveryReport.Error.Reason}");
+                }
+                else
+                {
+                    Console.WriteLine($"Produced event to topic {topic}: key = {deliveryReport.Message.Key,-10} value = {deliveryReport.Message.Value}");
+                }
+            });
+        }
+    }
 }
