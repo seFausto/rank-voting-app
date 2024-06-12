@@ -422,3 +422,7 @@ bundles/
 vendor/pkg/
 pyenv
 Vagrantfile
+
+
+# ignore kafka properties
+client.properties
