@@ -28,12 +28,18 @@
 </ul>
 <button class="btn btn-primary" @onclick="SubmitNewRanking">Submit New Ranking</button>
 
+@if (!string.IsNullOrWhiteSpace(_url))
+{    
+    <p>@_url</p>
+}
 
 @code {
     private int currentCount = 0;
 
     private string? _newCandidate;
     private string? _rankingName;
+    private string? _url;
+
 
     private string _rankingId = string.Empty;
     public string RankingId
@@ -79,6 +85,9 @@
                 Name = _rankingName
             };
 
+        // Show URL with id
+        _url = RankingId;
+
         var iniSettings = Common.GetKafkaConfiguration((IConfigurationRoot)this.configuration);
 
         using (var producer = new ProducerBuilder<string, string>(iniSettings).Build())
@@ -100,6 +109,11 @@
                     Console.WriteLine($"Produced event to topic {topic}: key = {deliveryReport.Message.Key,-10} value = {deliveryReport.Message.Value}");
                 }
             });
+
+            producer.Flush();
         }
+
+        _rankingName = string.Empty;
+        _rankingId = string.Empty;
     }
 }

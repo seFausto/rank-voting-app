@@ -1,0 +1,46 @@
+﻿@page "/existing-ranking/{existingRankingId}"
+@using Confluent.Kafka
+@using RankedChoiceVotingApp.Classes
+@using System.Text.Json
+@inject IConfiguration configuration
+@inject HttpClient Http
+@rendermode InteractiveServer
+
+<PageTitle>Existing Ranking</PageTitle>
+
+<h1>Existing Ranking</h1>
+
+<p> 
+    @RankingId
+</p>
+
+@code {
+    [Parameter]
+    public string existingRankingId { get; set; }
+
+    private string? _newCandidate;
+    private string? _rankingName;
+    private string? _url;
+
+    private string _rankingId = string.Empty;
+    public string RankingId
+    {
+        get
+        {
+            if (string.IsNullOrWhiteSpace(_rankingId))
+                _rankingId = Common.GenerateId();
+
+            return _rankingId;
+        }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+
+        await Http.PostAsJsonAsync<Ranking>($"http://localhost:5000/vote/{existingRankingId}/candidates/false", );
+
+        await base.OnInitializedAsync();
+        return;
+    }
+
+}
