@@ -1,0 +1,73 @@
+﻿@page "/existing-ranking/{existingRankingId}"
+@using Confluent.Kafka
+@using RankedChoiceVotingApp.Classes
+@using System.Text.Json
+@using System.Text
+@inject IConfiguration configuration
+@inject HttpClient Http
+@rendermode InteractiveServer
+
+<PageTitle>Existing Ranking</PageTitle>
+
+<h1>Existing Ranking</h1>
+
+<p> 
+    RankingId: @existingRankingId
+</p>
+
+<ul>
+    @if (_candidates is not null)
+    {
+        foreach (var candidate in _candidates)
+        {
+            <li>
+                <input value="@candidate" />
+            </li>
+        }
+
+    }
+
+</ul>
+
+@code {
+    [Parameter]
+    public string existingRankingId { get; set; }
+
+    private string? _newCandidate;
+    private string? _rankingName;
+    private string? _url;
+
+    private IEnumerable<string> _candidates;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var json = JsonSerializer.Serialize("123");
+
+        var content = new StringContent(json, Encoding.UTF8, "application/json");
+
+        try
+        {
+            // Send the POST request
+            var response = await Http.PostAsync($"http://localhost:5000/vote/{existingRankingId}/candidates/false", content);
+
+            // Ensure the request was successful
+            response.EnsureSuccessStatusCode();
+
+            // Read and process the response content if needed
+            var responseContent = await response.Content.ReadAsStringAsync();
+
+            _candidates = JsonSerializer.Deserialize<List<string>>(responseContent);
+        }
+        catch (HttpRequestException e)
+        {
+            // Handle any errors
+            Console.WriteLine($"Request error: {e.Message}");
+        }
+
+
+        await base.OnInitializedAsync();
+
+        return;
+    }
+
+}
