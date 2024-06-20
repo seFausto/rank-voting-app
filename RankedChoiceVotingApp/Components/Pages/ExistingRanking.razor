@@ -3,60 +3,60 @@
 @using RankedChoiceVotingApp.Classes
 @using System.Text.Json
 @using System.Text
+@using RankedChoiceVotingApp.Services
 @inject IConfiguration configuration
-@inject HttpClient Http
+@inject IApiService _apiService
 @rendermode InteractiveServer
+
 
 <PageTitle>Existing Ranking</PageTitle>
 
 <h1>Existing Ranking</h1>
 
-<p> 
+<p>
     RankingId: @existingRankingId
 </p>
 
-<ul>
-    @if (_candidates is not null)
-    {
-        foreach (var candidate in _candidates)
-        {
-            <li>
-                <input value="@candidate" />
-            </li>
-        }
-
-    }
-
-</ul>
+@if (_candidates == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var candidate in _candidates)
+            {
+                <tr>
+                    <td>@candidate</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
 
 @code {
     [Parameter]
-    public string existingRankingId { get; set; }
+    public string existingRankingId { get; set; } = string.Empty;
 
     private string? _newCandidate;
     private string? _rankingName;
     private string? _url;
 
-    private IEnumerable<string> _candidates;
+    private List<string> _candidates = new List<string>();
 
     protected override async Task OnInitializedAsync()
     {
-        var json = JsonSerializer.Serialize("123");
-
-        var content = new StringContent(json, Encoding.UTF8, "application/json");
-
         try
         {
-            // Send the POST request
-            var response = await Http.PostAsync($"http://localhost:5000/vote/{existingRankingId}/candidates/false", content);
+            var task = await _apiService.GetListOfCandidatesAsync(existingRankingId);
 
-            // Ensure the request was successful
-            response.EnsureSuccessStatusCode();
-
-            // Read and process the response content if needed
-            var responseContent = await response.Content.ReadAsStringAsync();
-
-            _candidates = JsonSerializer.Deserialize<List<string>>(responseContent);
+            _candidates = task.ToList();
         }
         catch (HttpRequestException e)
         {
