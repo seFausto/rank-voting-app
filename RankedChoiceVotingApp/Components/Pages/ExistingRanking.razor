@@ -44,10 +44,6 @@ else
     [Parameter]
     public string existingRankingId { get; set; } = string.Empty;
 
-    private string? _newCandidate;
-    private string? _rankingName;
-    private string? _url;
-
     private List<string> _candidates = new List<string>();
 
     protected override async Task OnInitializedAsync()
@@ -58,9 +54,8 @@ else
 
             _candidates = task.ToList();
         }
-        catch (HttpRequestException e)
+        catch (Exception e)
         {
-            // Handle any errors
             Console.WriteLine($"Request error: {e.Message}");
         }
 

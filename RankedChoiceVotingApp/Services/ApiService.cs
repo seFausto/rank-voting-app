@@ -32,7 +32,7 @@ namespace RankedChoiceVotingApp.Services
             request.AddBody(JsonSerializer.Serialize(userId));
              
 
-            var response = client.Execute<CandidateListDto>(request);
+            var response = await client.ExecuteAsync<CandidateListDto>(request);
 
             if (response.IsSuccessStatusCode)
             {

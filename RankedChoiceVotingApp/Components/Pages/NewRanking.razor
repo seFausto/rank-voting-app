@@ -34,8 +34,6 @@
 }
 
 @code {
-    private int currentCount = 0;
-
     private string? _newCandidate;
     private string? _rankingName;
     private string? _url;
@@ -110,7 +108,7 @@
                 }
             });
 
-            producer.Flush();
+            producer.Flush(TimeSpan.FromSeconds(10));
         }
 
         _rankingName = string.Empty;
