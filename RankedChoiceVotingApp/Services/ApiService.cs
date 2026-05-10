@@ -1,7 +1,5 @@
-using Microsoft.Extensions.Options;
 using RankedChoiceVotingApp.Classes;
 using RestSharp;
-using System.Text.Json;
 
 namespace RankedChoiceVotingApp.Services
 {
@@ -13,18 +11,21 @@ namespace RankedChoiceVotingApp.Services
 
     public class ApiService : IApiService
     {
-        private readonly ApiServiceSettings _apiServiceSettings;
+        private const string GetCandidatesRoute = "rankings/{id}/candidates";
+        private const string SubmitRankingRoute = "rankings/{name}";
 
-        public ApiService(IOptions<ApiServiceSettings> apiServiceSettings)
+        private readonly RestClient _client;
+
+        public ApiService(RestClient client)
         {
-            _apiServiceSettings = apiServiceSettings.Value;
+            _client = client;
         }
 
         public async Task<IEnumerable<string>> GetListOfCandidatesAsync(string rankingId)
         {
-            var client = new RestClient(_apiServiceSettings.EndpointUrl);
-            var request = new RestRequest($"rankings/{rankingId}/candidates", Method.Get);
-            var response = await client.ExecuteAsync<CandidateListDto>(request);
+            var request = new RestRequest(GetCandidatesRoute, Method.Get)
+                .AddUrlSegment("id", rankingId);
+            var response = await _client.ExecuteAsync<CandidateListDto>(request);
 
             if (response.IsSuccessStatusCode)
             {
@@ -38,9 +39,9 @@ namespace RankedChoiceVotingApp.Services
 
         public async Task SubmitRankingAsync(string name)
         {
-            var client = new RestClient(_apiServiceSettings.EndpointUrl);
-            var request = new RestRequest($"rankings/{name}", Method.Post);
-            await client.ExecuteAsync(request);
+            var request = new RestRequest(SubmitRankingRoute, Method.Post)
+                .AddUrlSegment("name", name);
+            await _client.ExecuteAsync(request);
         }
 
         public class CandidateListDto

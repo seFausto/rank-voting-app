@@ -4,7 +4,7 @@ namespace RankedChoiceVotingApp.Classes
 {
     public static class Common
     {
-        private const int _idSize = 5;
+        private const int _idSize = 8;
 
         public static string GenerateId()
         {
