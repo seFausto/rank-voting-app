@@ -1,5 +1,4 @@
 ﻿@page "/existing-ranking/{existingRankingId}"
-@using Confluent.Kafka
 @using RankedChoiceVotingApp.Classes
 @using System.Text.Json
 @using System.Text
@@ -9,36 +8,40 @@
 @rendermode InteractiveServer
 
 
-<PageTitle>Existing Ranking</PageTitle>
+<PageTitle>Ranking @existingRankingId</PageTitle>
 
-<h1>Existing Ranking</h1>
-
-<p>
-    RankingId: @existingRankingId
-</p>
-
-@if (_candidates == null)
-{
-    <p><em>Loading...</em></p>
-}
-else
-{
-    <table class="table">
-        <thead>
-            <tr>
-                <th>Name</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach (var candidate in _candidates)
-            {
-                <tr>
-                    <td>@candidate</td>
-                </tr>
-            }
-        </tbody>
-    </table>
-}
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <div class="card shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Candidates</h4>
+                <span class="badge bg-secondary font-monospace">@existingRankingId</span>
+            </div>
+            <div class="card-body p-0">
+                @if (_candidates == null)
+                {
+                    <div class="p-4 text-center text-muted">
+                        <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                        Loading...
+                    </div>
+                }
+                else if (_candidates.Count == 0)
+                {
+                    <div class="p-4 text-center text-muted">No candidates found for this ranking.</div>
+                }
+                else
+                {
+                    <ol class="list-group list-group-numbered list-group-flush">
+                        @foreach (var candidate in _candidates)
+                        {
+                            <li class="list-group-item">@candidate</li>
+                        }
+                    </ol>
+                }
+            </div>
+        </div>
+    </div>
+</div>
 
 @code {
     [Parameter]

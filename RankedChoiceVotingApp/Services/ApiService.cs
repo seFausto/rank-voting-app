@@ -1,15 +1,14 @@
-﻿using Confluent.Kafka.Admin;
-using Microsoft.Extensions.Options;
+﻿using Microsoft.Extensions.Options;
 using RankedChoiceVotingApp.Classes;
 using RestSharp;
 using System.Text.Json;
-using System.Text.Json.Serialization;
 
 namespace RankedChoiceVotingApp.Services
 {
     public interface IApiService
     {
         Task<IEnumerable<string>> GetListOfCandidatesAsync(string rankingId);
+        Task SubmitRankingAsync(Ranking ranking);
     }
 
     public class ApiService : IApiService
@@ -30,7 +29,6 @@ namespace RankedChoiceVotingApp.Services
 
             var request = new RestRequest($"{rankingId}/candidates/{didVote}", Method.Post);
             request.AddBody(JsonSerializer.Serialize(userId));
-             
 
             var response = await client.ExecuteAsync<CandidateListDto>(request);
 
@@ -42,6 +40,14 @@ namespace RankedChoiceVotingApp.Services
             {
                 return new List<string>();
             }
+        }
+
+        public async Task SubmitRankingAsync(Ranking ranking)
+        {
+            var client = new RestClient(_apiServiceSettings.EndpointUrl);
+            var request = new RestRequest("", Method.Post);
+            request.AddJsonBody(JsonSerializer.Serialize(ranking));
+            await client.ExecuteAsync(request);
         }
 
         public class CandidateListDto
