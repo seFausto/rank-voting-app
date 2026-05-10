@@ -1,4 +1,4 @@
-﻿using Microsoft.Extensions.Options;
+using Microsoft.Extensions.Options;
 using RankedChoiceVotingApp.Classes;
 using RestSharp;
 using System.Text.Json;
@@ -8,7 +8,7 @@ namespace RankedChoiceVotingApp.Services
     public interface IApiService
     {
         Task<IEnumerable<string>> GetListOfCandidatesAsync(string rankingId);
-        Task SubmitRankingAsync(Ranking ranking);
+        Task SubmitRankingAsync(string name);
     }
 
     public class ApiService : IApiService
@@ -23,13 +23,7 @@ namespace RankedChoiceVotingApp.Services
         public async Task<IEnumerable<string>> GetListOfCandidatesAsync(string rankingId)
         {
             var client = new RestClient(_apiServiceSettings.EndpointUrl);
-
-            var didVote = false;
-            var userId = "test";
-
-            var request = new RestRequest($"{rankingId}/candidates/{didVote}", Method.Post);
-            request.AddBody(JsonSerializer.Serialize(userId));
-
+            var request = new RestRequest($"rankings/{rankingId}/candidates", Method.Get);
             var response = await client.ExecuteAsync<CandidateListDto>(request);
 
             if (response.IsSuccessStatusCode)
@@ -38,29 +32,25 @@ namespace RankedChoiceVotingApp.Services
             }
             else
             {
-                return new List<string>();
+                return [];
             }
         }
 
-        public async Task SubmitRankingAsync(Ranking ranking)
+        public async Task SubmitRankingAsync(string name)
         {
             var client = new RestClient(_apiServiceSettings.EndpointUrl);
-            var request = new RestRequest("", Method.Post);
-            request.AddJsonBody(JsonSerializer.Serialize(ranking));
+            var request = new RestRequest($"rankings/{name}", Method.Post);
             await client.ExecuteAsync(request);
         }
 
         public class CandidateListDto
         {
-            public List<CandidateDto> Candidates { get; set; }
+            public List<CandidateDto> Candidates { get; set; } = [];
         }
 
         public class CandidateDto
         {
-            public string Name { get; set; }
+            public string Name { get; set; } = string.Empty;
         }
-
     }
-
-
 }

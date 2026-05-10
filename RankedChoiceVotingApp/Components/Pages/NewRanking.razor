@@ -99,14 +99,7 @@
         if (string.IsNullOrWhiteSpace(_rankingName))
             return;
 
-        var ranking = new Ranking
-            {
-                Id = this.RankingId,
-                Candidates = _candidates,
-                Name = _rankingName
-            };
-
-        await _apiService.SubmitRankingAsync(ranking);
+        await _apiService.SubmitRankingAsync(_rankingName);
 
         _url = RankingId;
         _rankingName = string.Empty;
