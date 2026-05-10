@@ -1,3 +1,4 @@
+using System.Text.Json;
 using RankedChoiceVotingApp.Classes;
 using RestSharp;
 
@@ -28,13 +29,24 @@ namespace RankedChoiceVotingApp.Services
 			var request = new RestRequest(GetCandidatesRoute, Method.Get)
 				.AddUrlSegment("id", rankingId);
 
-			var response = await _client.ExecuteAsync<CandidateListDto>(request);
+			var response = await _client.ExecuteAsync(request);
 
 			_logger.LogInformation("GET {Url} -> {Status}", response.ResponseUri, response.StatusCode);
 
-			if (response.IsSuccessStatusCode)
+			if (response.IsSuccessStatusCode && response.Content != null)
 			{
-				return response.Data?.Candidates.Select(x => x.Name) ?? [];
+				_logger.LogInformation("GetListOfCandidates response body: {Body}", response.Content);
+				try
+				{
+					var dto = JsonSerializer.Deserialize<CandidateListDto>(response.Content,
+						new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
+					return dto?.Candidates ?? [];
+				}
+				catch (JsonException ex)
+				{
+					_logger.LogError(ex, "Failed to deserialize candidates response");
+					return [];
+				}
 			}
 			else
 			{
@@ -61,12 +73,7 @@ namespace RankedChoiceVotingApp.Services
 
 		public class CandidateListDto
 		{
-			public List<CandidateDto> Candidates { get; set; } = [];
-		}
-
-		public class CandidateDto
-		{
-			public string Name { get; set; } = string.Empty;
+			public List<string> Candidates { get; set; } = [];
 		}
 	}
 }

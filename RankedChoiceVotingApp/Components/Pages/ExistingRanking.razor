@@ -5,7 +5,7 @@
 @using RankedChoiceVotingApp.Services
 @inject IConfiguration configuration
 @inject IApiService _apiService
-@rendermode InteractiveServer
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
 
 
 <PageTitle>Ranking @existingRankingId</PageTitle>
