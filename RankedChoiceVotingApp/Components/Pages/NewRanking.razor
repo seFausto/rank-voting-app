@@ -2,6 +2,8 @@
 @using RankedChoiceVotingApp.Classes
 @using RankedChoiceVotingApp.Services
 @inject IApiService _apiService
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
 @rendermode InteractiveServer
 
 <PageTitle>New Ranking</PageTitle>
@@ -47,7 +49,13 @@
         @if (!string.IsNullOrWhiteSpace(_url))
         {
             <div class="alert alert-success mt-3" role="alert">
-                <strong>Ranking created!</strong> Share this ID with voters: <span class="font-monospace fw-bold">@_url</span>
+                <strong>Ranking created!</strong>
+                <div class="input-group mt-2">
+                    <input class="form-control font-monospace" value="@GetRankingUrl()" readonly />
+                    <button class="btn btn-outline-success" @onclick="CopyLink">
+                        @(_copied ? "Copied!" : "Copy")
+                    </button>
+                </div>
             </div>
         }
 
@@ -63,6 +71,7 @@
     private string? _rankingName;
     private string? _url;
     private string? _error;
+    private bool _copied;
 
 
     private string _rankingId = string.Empty;
@@ -98,6 +107,17 @@
 
             _newCandidate = string.Empty;
         }
+    }
+
+    private string GetRankingUrl() =>
+        Navigation.ToAbsoluteUri($"/existing-ranking/{_url}").ToString();
+
+    private async Task CopyLink()
+    {
+        await JS.InvokeVoidAsync("navigator.clipboard.writeText", GetRankingUrl());
+        _copied = true;
+        await Task.Delay(2000);
+        _copied = false;
     }
 
     private async Task SubmitNewRanking()

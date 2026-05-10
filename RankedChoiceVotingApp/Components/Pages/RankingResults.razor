@@ -1,0 +1,94 @@
+@page "/ranking-results/{rankingId}"
+@using RankedChoiceVotingApp.Services
+@inject IApiService _apiService
+@rendermode @(new InteractiveServerRenderMode(prerender: false))
+
+<PageTitle>Results @rankingId</PageTitle>
+
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <div class="card shadow-sm">
+            <div class="card-header d-flex justify-content-between align-items-center">
+                <h4 class="mb-0">Results</h4>
+                <div class="d-flex align-items-center gap-2">
+                    @if (!_loading)
+                    {
+                        <span class="text-muted small">@_ballotCount ballot@(_ballotCount == 1 ? "" : "s")</span>
+                    }
+                    <span class="badge bg-secondary font-monospace">@rankingId</span>
+                </div>
+            </div>
+            <div class="card-body p-0">
+                @if (_loading)
+                {
+                    <div class="p-4 text-center text-muted">
+                        <div class="spinner-border spinner-border-sm me-2" role="status"></div>
+                        Loading...
+                    </div>
+                }
+                else if (_results.Count == 0)
+                {
+                    <div class="p-4 text-center text-muted">No results yet.</div>
+                }
+                else
+                {
+                    <ul class="list-group list-group-flush">
+                        @for (int i = 0; i < _results.Count; i++)
+                        {
+                            var place = i + 1;
+                            var (bgClass, label) = place switch
+                            {
+                                1 => ("list-group-item-warning", "🥇"),
+                                2 => ("list-group-item-light", "🥈"),
+                                3 => ("list-group-item-light", "🥉"),
+                                _ => ("", $"{place}.")
+                            };
+                            <li class="list-group-item d-flex align-items-center gap-2 @bgClass">
+                                <span class="fs-5">@label</span>
+                                <span class="@(place == 1 ? "fw-bold" : "")">@_results[i]</span>
+                            </li>
+                        }
+                    </ul>
+                }
+            </div>
+        </div>
+
+        @if (!string.IsNullOrWhiteSpace(_error))
+        {
+            <div class="alert alert-danger mt-3" role="alert">@_error</div>
+        }
+    </div>
+</div>
+
+@code {
+    [Parameter]
+    public string rankingId { get; set; } = string.Empty;
+
+    private List<string> _results = [];
+    private int _ballotCount;
+    private bool _loading = true;
+    private string? _error;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var resultsTask = _apiService.GetResultsAsync(rankingId);
+        var countTask = _apiService.GetBallotCountAsync(rankingId);
+
+        await Task.WhenAll(resultsTask, countTask);
+
+        _ballotCount = countTask.Result;
+
+        try
+        {
+            _results = resultsTask.Result.ToList();
+        }
+        catch (Exception e)
+        {
+            _error = $"Failed to load results: {e.Message}";
+        }
+        finally
+        {
+            _loading = false;
+        }
+    }
+}

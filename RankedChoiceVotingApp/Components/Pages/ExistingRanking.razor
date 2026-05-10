@@ -1,12 +1,8 @@
-﻿@page "/existing-ranking/{existingRankingId}"
+@page "/existing-ranking/{existingRankingId}"
 @using RankedChoiceVotingApp.Classes
-@using System.Text.Json
-@using System.Text
 @using RankedChoiceVotingApp.Services
-@inject IConfiguration configuration
 @inject IApiService _apiService
 @rendermode @(new InteractiveServerRenderMode(prerender: false))
-
 
 <PageTitle>Ranking @existingRankingId</PageTitle>
 
@@ -14,32 +10,67 @@
     <div class="col-md-7">
         <div class="card shadow-sm">
             <div class="card-header d-flex justify-content-between align-items-center">
-                <h4 class="mb-0">Candidates</h4>
-                <span class="badge bg-secondary font-monospace">@existingRankingId</span>
+                <h4 class="mb-0">Submit Your Ballot</h4>
+                <div class="d-flex align-items-center gap-2">
+                    <a class="btn btn-sm btn-outline-secondary" href="/ranking-results/@existingRankingId">View Results</a>
+                    <span class="badge bg-secondary font-monospace">@existingRankingId</span>
+                </div>
             </div>
-            <div class="card-body p-0">
-                @if (_candidates == null)
+            <div class="card-body">
+                @if (_loading)
                 {
-                    <div class="p-4 text-center text-muted">
+                    <div class="p-2 text-center text-muted">
                         <div class="spinner-border spinner-border-sm me-2" role="status"></div>
                         Loading...
                     </div>
                 }
                 else if (_candidates.Count == 0)
                 {
-                    <div class="p-4 text-center text-muted">No candidates found for this ranking.</div>
+                    <div class="p-2 text-center text-muted">No candidates found for this ranking.</div>
                 }
                 else
                 {
-                    <ol class="list-group list-group-numbered list-group-flush">
-                        @foreach (var candidate in _candidates)
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Your Name</label>
+                        <input class="form-control" placeholder="Enter your name" @bind="_userName" />
+                    </div>
+
+                    <label class="form-label fw-semibold">Rank the Candidates</label>
+                    <p class="text-muted small">Use the arrows to order from most to least preferred.</p>
+                    <ul class="list-group mb-3">
+                        @for (int i = 0; i < _candidates.Count; i++)
                         {
-                            <li class="list-group-item">@candidate</li>
+                            var index = i;
+                            <li class="list-group-item d-flex justify-content-between align-items-center">
+                                <span>
+                                    <span class="badge bg-primary me-2">@(index + 1)</span>
+                                    @_candidates[index]
+                                </span>
+                                <span>
+                                    <button class="btn btn-sm btn-outline-secondary me-1" @onclick="() => MoveUp(index)" disabled="@(index == 0)">&#8593;</button>
+                                    <button class="btn btn-sm btn-outline-secondary" @onclick="() => MoveDown(index)" disabled="@(index == _candidates.Count - 1)">&#8595;</button>
+                                </span>
+                            </li>
                         }
-                    </ol>
+                    </ul>
+
+                    <button class="btn btn-primary w-100" @onclick="SubmitBallot"
+                            disabled="@(string.IsNullOrWhiteSpace(_userName))">
+                        Submit Ballot
+                    </button>
                 }
             </div>
         </div>
+
+        @if (!string.IsNullOrWhiteSpace(_success))
+        {
+            <div class="alert alert-success mt-3" role="alert">@_success</div>
+        }
+
+        @if (!string.IsNullOrWhiteSpace(_error))
+        {
+            <div class="alert alert-danger mt-3" role="alert">@_error</div>
+        }
     </div>
 </div>
 
@@ -47,25 +78,53 @@
     [Parameter]
     public string existingRankingId { get; set; } = string.Empty;
 
-    private List<string> _candidates = new List<string>();
+    private List<string> _candidates = [];
+    private string? _userName;
+    private string? _success;
+    private string? _error;
+    private bool _loading = true;
 
     protected override async Task OnInitializedAsync()
     {
         try
         {
-            var task = await _apiService.GetListOfCandidatesAsync(existingRankingId);
-
-            _candidates = task.ToList();
+            var result = await _apiService.GetListOfCandidatesAsync(existingRankingId);
+            _candidates = result.ToList();
         }
         catch (Exception e)
         {
-            Console.WriteLine($"Request error: {e.Message}");
+            _error = $"Failed to load candidates: {e.Message}";
         }
-
-
-        await base.OnInitializedAsync();
-
-        return;
+        finally
+        {
+            _loading = false;
+        }
     }
 
+    private void MoveUp(int index)
+    {
+        if (index <= 0) return;
+        (_candidates[index - 1], _candidates[index]) = (_candidates[index], _candidates[index - 1]);
+    }
+
+    private void MoveDown(int index)
+    {
+        if (index >= _candidates.Count - 1) return;
+        (_candidates[index + 1], _candidates[index]) = (_candidates[index], _candidates[index + 1]);
+    }
+
+    private async Task SubmitBallot()
+    {
+        if (string.IsNullOrWhiteSpace(_userName)) return;
+
+        _success = null;
+        _error = null;
+
+        var success = await _apiService.SubmitBallotAsync(existingRankingId, _userName, _candidates);
+
+        if (success)
+            _success = $"Ballot submitted! Thanks, {_userName}.";
+        else
+            _error = "Failed to submit ballot. Please try again.";
+    }
 }
