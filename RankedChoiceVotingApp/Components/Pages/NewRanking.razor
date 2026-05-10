@@ -1,42 +1,77 @@
 ﻿@page "/new-ranking"
-@using Confluent.Kafka
 @using RankedChoiceVotingApp.Classes
-@using System.Text.Json
-@inject IConfiguration configuration
+@using RankedChoiceVotingApp.Services
+@inject IApiService _apiService
+@inject NavigationManager Navigation
+@inject IJSRuntime JS
 @rendermode InteractiveServer
 
 <PageTitle>New Ranking</PageTitle>
 
-<h1>New Ranking</h1>
+<div class="row justify-content-center">
+    <div class="col-md-7">
+        <div class="card shadow-sm">
+            <div class="card-header">
+                <h4 class="mb-0">New Ranking</h4>
+            </div>
+            <div class="card-body">
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Ranking Name</label>
+                    <input class="form-control" placeholder="e.g. Best Pizza Toppings" @bind="_rankingName" />
+                </div>
 
-<p role="status">Please enter the name of the new ranking</p>
-<input placeholder="Name of Ranking" @bind="_rankingName" />
+                <div class="mb-3">
+                    <label class="form-label fw-semibold">Candidates</label>
+                    <div class="input-group">
+                        <input class="form-control" placeholder="Enter a candidate" @bind="_newCandidate" @bind:event="oninput" @onkeyup="HandleCandidateKeyUp" />
+                        <button class="btn btn-outline-primary" @onclick="AddCandidate">Add</button>
+                    </div>
+                </div>
 
-<p> Please enter each candidate</p>
-<input placeholder="Candidate" @bind="_newCandidate" />
-<button class="btn btn-primary" @onclick="AddCandidate">Add Candidate</button>
+                @if (_candidates.Count > 0)
+                {
+                    <ul class="list-group mb-3">
+                        @foreach (var candidate in _candidates)
+                        {
+                            <li class="list-group-item">
+                                <input class="form-control form-control-sm border-0 p-0" @bind="candidate.Name" />
+                            </li>
+                        }
+                    </ul>
+                }
 
+                <button class="btn btn-primary w-100" @onclick="SubmitNewRanking" disabled="@(string.IsNullOrWhiteSpace(_rankingName) || _candidates.Count == 0)">
+                    Submit Ranking
+                </button>
+            </div>
+        </div>
 
-<ul>
-    @foreach (var candidate in _candidates)
-    {
-        <li>
-            <input @bind="candidate.Name" />
-        </li>
-    }
+        @if (!string.IsNullOrWhiteSpace(_url))
+        {
+            <div class="alert alert-success mt-3" role="alert">
+                <strong>Ranking created!</strong>
+                <div class="input-group mt-2">
+                    <input class="form-control font-monospace" value="@GetRankingUrl()" readonly />
+                    <button class="btn btn-outline-success" @onclick="CopyLink">
+                        @(_copied ? "Copied!" : "Copy")
+                    </button>
+                </div>
+            </div>
+        }
 
-</ul>
-<button class="btn btn-primary" @onclick="SubmitNewRanking">Submit New Ranking</button>
-
-@if (!string.IsNullOrWhiteSpace(_url))
-{    
-    <p>@_url</p>
-}
+        @if (!string.IsNullOrWhiteSpace(_error))
+        {
+            <div class="alert alert-danger mt-3" role="alert">@_error</div>
+        }
+    </div>
+</div>
 
 @code {
     private string? _newCandidate;
     private string? _rankingName;
     private string? _url;
+    private string? _error;
+    private bool _copied;
 
 
     private string _rankingId = string.Empty;
@@ -53,15 +88,20 @@
 
     private List<Candidate> _candidates = new();
 
+    private void HandleCandidateKeyUp(KeyboardEventArgs e)
+    {
+        if (e.Key == "Enter") AddCandidate();
+    }
+
     private void AddCandidate()
     {
         if (!string.IsNullOrWhiteSpace(_newCandidate))
         {
             Candidate candidate = new()
-                {
-                    Name = _newCandidate,
-                    RankingId = RankingId
-                };
+            {
+                Name = _newCandidate,
+                RankingId = RankingId
+            };
 
             _candidates.Add(candidate);
 
@@ -69,49 +109,34 @@
         }
     }
 
-    private void SubmitNewRanking()
-    {
-        const string topic = "new-ranking";
+    private string GetRankingUrl() =>
+        Navigation.ToAbsoluteUri($"/existing-ranking/{_url}").ToString();
 
+    private async Task CopyLink()
+    {
+        await JS.InvokeVoidAsync("navigator.clipboard.writeText", GetRankingUrl());
+        _copied = true;
+        await Task.Delay(2000);
+        _copied = false;
+    }
+
+    private async Task SubmitNewRanking()
+    {
         if (string.IsNullOrWhiteSpace(_rankingName))
             return;
 
-        var ranking = new Ranking
-            {
-                Id = this.RankingId,
-                Candidates = _candidates,
-                Name = _rankingName
-            };
+        _error = null;
+        var rankId = await _apiService.SubmitRankingAsync(_rankingName, _candidates.Select(c => c.Name));
 
-        // Show URL with id
-        _url = RankingId;
-
-        var iniSettings = Common.GetKafkaConfiguration((IConfigurationRoot)this.configuration);
-
-        using (var producer = new ProducerBuilder<string, string>(iniSettings).Build())
+        if (string.IsNullOrWhiteSpace(rankId))
         {
-            Message<string, string> message = new()
-                {
-                    Key = _rankingName,
-                    Value = JsonSerializer.Serialize(ranking)
-                };
-
-            producer.Produce(topic, message, (deliveryReport) =>
-            {
-                if (deliveryReport.Error.Code != ErrorCode.NoError)
-                {
-                    Console.WriteLine($"Failed to deliver message: {deliveryReport.Error.Reason}");
-                }
-                else
-                {
-                    Console.WriteLine($"Produced event to topic {topic}: key = {deliveryReport.Message.Key,-10} value = {deliveryReport.Message.Value}");
-                }
-            });
-
-            producer.Flush(TimeSpan.FromSeconds(10));
+            _error = "Failed to create ranking. Check the console for details.";            
         }
-
-        _rankingName = string.Empty;
-        _rankingId = string.Empty;
+        else
+        {
+            _url = rankId;
+            _rankingName = string.Empty;
+            _rankingId = string.Empty;
+        }
     }
 }

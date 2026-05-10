@@ -1,9 +1,9 @@
 using Microsoft.Extensions.DependencyInjection;
+using Microsoft.Extensions.Options;
 using RankedChoiceVotingApp.Classes;
 using RankedChoiceVotingApp.Components;
 using RankedChoiceVotingApp.Services;
-using System.Configuration;
-
+using RestSharp;
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -13,11 +13,15 @@ builder.Services
     .AddInteractiveServerComponents();
 
 
-builder.Services.AddScoped<IApiService, ApiService>();
-
 builder.Services.Configure<ApiServiceSettings>(builder.Configuration.GetSection("ApiServiceSettings"));
 
-builder.Configuration.AddIniFile("kafkaClient.properties");
+builder.Services.AddSingleton(sp =>
+{
+    var settings = sp.GetRequiredService<IOptions<ApiServiceSettings>>().Value;
+    return new RestClient(settings.EndpointUrl);
+});
+
+builder.Services.AddScoped<IApiService, ApiService>();
 
 builder.Configuration.AddEnvironmentVariables();
 
