@@ -50,6 +50,11 @@
                 <strong>Ranking created!</strong> Share this ID with voters: <span class="font-monospace fw-bold">@_url</span>
             </div>
         }
+
+        @if (!string.IsNullOrWhiteSpace(_error))
+        {
+            <div class="alert alert-danger mt-3" role="alert">@_error</div>
+        }
     </div>
 </div>
 
@@ -57,6 +62,7 @@
     private string? _newCandidate;
     private string? _rankingName;
     private string? _url;
+    private string? _error;
 
 
     private string _rankingId = string.Empty;
@@ -83,10 +89,10 @@
         if (!string.IsNullOrWhiteSpace(_newCandidate))
         {
             Candidate candidate = new()
-                {
-                    Name = _newCandidate,
-                    RankingId = RankingId
-                };
+            {
+                Name = _newCandidate,
+                RankingId = RankingId
+            };
 
             _candidates.Add(candidate);
 
@@ -99,10 +105,18 @@
         if (string.IsNullOrWhiteSpace(_rankingName))
             return;
 
-        await _apiService.SubmitRankingAsync(_rankingName);
+        _error = null;
+        var rankId = await _apiService.SubmitRankingAsync(_rankingName, _candidates.Select(c => c.Name));
 
-        _url = RankingId;
-        _rankingName = string.Empty;
-        _rankingId = string.Empty;
+        if (string.IsNullOrWhiteSpace(rankId))
+        {
+            _error = "Failed to create ranking. Check the console for details.";            
+        }
+        else
+        {
+            _url = rankId;
+            _rankingName = string.Empty;
+            _rankingId = string.Empty;
+        }
     }
 }
